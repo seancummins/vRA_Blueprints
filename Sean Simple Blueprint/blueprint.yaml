@@ -1,4 +1,6 @@
 formatVersion: 1
+name: Sean Simple Blueprint
+version: 1
 inputs:
   env:
     title: Target Environment

@@ -1,4 +1,6 @@
 formatVersion: 1
+name: Sean Ansible Control Machine
+version: 1
 inputs:
   username:
     type: string

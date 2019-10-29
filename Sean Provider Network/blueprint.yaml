@@ -1,4 +1,6 @@
 formatVersion: 1
+name: Sean Provider Network
+version: 1
 inputs: {}
 resources:
   Cloud_Network_1:

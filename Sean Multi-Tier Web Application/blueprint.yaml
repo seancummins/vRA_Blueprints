@@ -1,5 +1,6 @@
-name: NSX-T
-description: Description
+formatVersion: 1
+name: Sean Multi-Tier Web Application
+version: 1
 inputs:
   image:
     type: string

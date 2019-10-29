@@ -1,5 +1,5 @@
 formatVersion: 1
-name: vSphere Template Builder
+name: Sean vSphere Template Builder
 version: 1
 inputs:
   vcenter_server:
