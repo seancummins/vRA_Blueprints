@@ -1,0 +1,65 @@
+formatVersion: 1
+inputs:
+  username:
+    type: string
+    title: Username
+    description: Username
+    default: root
+  password:
+    type: string
+    title: Password
+    default: VMware1!
+    encrypted: true
+    description: Password for the given username
+  TargetCloudType:
+    title: Target Cloud Environment
+    type: string
+    default: 'platform:vsphere'
+    enum:
+      - 'platform:vsphere'
+      - 'platform:aws'
+      - 'platform:azure'
+resources:
+  Cloud_Network_1:
+    type: Cloud.Network
+    metadata:
+      layoutPosition:
+        - 0
+        - 0
+    properties:
+      networkType: existing
+  #      constraints:
+  #        - tag: 'net:app'
+  AnsibleControlMachine:
+    type: Cloud.Machine
+    metadata:
+      layoutPosition:
+        - 1
+        - 0
+    properties:
+      image: Ubuntu
+      flavor: Small
+      constraints:
+        - tag: '${input.TargetCloudType}'
+      cloudConfig: |
+        #cloud-config
+        chpasswd:
+          list: |
+            ${input.username}:${input.password}
+          expire: false  
+        runcmd:
+        - sudo sed -e 's/.*PasswordAuthentication no.*/PasswordAuthentication yes/' -i /etc/ssh/sshd_config
+        - sudo sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin yes/' /etc/ssh/sshd_config
+        - sudo service sshd restart
+        - apt-add-repository ppa:ansible/ansible --yes
+        - apt-get update
+        - apt-get install ansible --yes
+        - sudo sed -e 's/.*host_key_checking = False.*/host_key_checking = False/' -i /etc/ansible/ansible.cfg
+        - sudo chmod 755 /etc/ansible/
+        - sudo chmod 755 /etc/ansible/hosts
+        - sudo sed -e 's/.*vault_password_file.*/vault_password_file=vault_pass.txt/' -i /etc/ansible/ansible.cfg
+        - sudo touch /etc/ansible/vault_pass.txt
+        - sudo echo '${input.password}' > /etc/ansible/vault_pass.txt
+      networks:
+        - network: '${resource.Cloud_Network_1.id}'
+          assignment: dynamic

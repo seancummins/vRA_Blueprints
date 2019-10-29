@@ -1,0 +1,27 @@
+formatVersion: 1
+inputs: {}
+resources:
+  Cloud_Machine_1:
+    type: Cloud.Machine
+    metadata:
+      layoutPosition:
+        - 0
+        - 1
+    properties:
+      image: Ubuntu
+      flavor: Small
+      constraints:
+        - tag: 'platform:vsphere'
+      networks:
+        - network: '${resource.Cloud_Network_1.id}'
+          assignment: dynamic
+  Cloud_Network_1:
+    type: Cloud.Network
+    metadata:
+      layoutPosition:
+        - 1
+        - 0
+    properties:
+      networkType: existing
+      constraints:
+        - tag: 'net:provider'

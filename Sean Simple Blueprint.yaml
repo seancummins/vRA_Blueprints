@@ -1,0 +1,62 @@
+formatVersion: 1
+inputs:
+  env:
+    title: Target Environment
+    description: Select the target environment type for this deployment.
+    type: string
+    oneOf:
+      - title: Production
+        const: 'env:prod'
+      - title: Development
+        const: 'env:dev'
+    default: 'env:prod'
+  cloud:
+    title: Target Cloud
+    description: Select the target cloud platform type for this deployment.
+    type: string
+    oneOf:
+      - title: AWS
+        const: 'platform:aws'
+      - title: Azure
+        const: 'platform:azure'
+      - title: VMware SDDC
+        const: 'platform:vsphere'
+    default: 'platform:vsphere'
+resources:
+  Cloud_Machine_1:
+    type: Cloud.Machine
+    metadata:
+      layoutPosition:
+        - 0
+        - 1
+    name: CloudMachine
+    properties:
+      image: CentOS
+      flavor: Small
+      tags:
+        - key: AppName
+          value: AppDelta
+        - key: AppEnvironment
+          value: Production
+      networks:
+        - name: '${resource.Cloud_Network_1.name}'
+          network: '${resource.Cloud_Network_1.id}'
+      constraints:
+        - tag: '${input.cloud}'
+        - tag: '${input.env}'
+      cloudConfig: |
+        #cloudconfig
+        hostname: ${resource.Cloud_Machine_1.name}
+        runcmd:
+         - echo "test" > /root/testfile
+         - sudo sed -i -e 's|test|${input.env}.newtest.${resource.Cloud_Network_1.name}|g /root/testfile
+  Cloud_Network_1:
+    type: Cloud.Network
+    metadata:
+      layoutPosition:
+        - 1
+        - 0
+    properties:
+      name: network
+      networkType: existing
+      assignment: dynamic
